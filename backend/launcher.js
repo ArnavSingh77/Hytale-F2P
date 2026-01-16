@@ -685,7 +685,7 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
     throw new Error(`Game client missing. Tried: ${attempted}`);
   }
 
-  const uuid = uuidv4();
+  const uuid = getUuidForUser(playerName);
   const args = [
     '--app-dir', gameLatest,
     '--java-exec', javaBin,
@@ -715,6 +715,21 @@ function saveUsername(username) {
 function loadUsername() {
   const config = loadConfig();
   return config.username || 'Player';
+}
+
+function getUuidForUser(username) {
+  const config = loadConfig();
+  const userUuids = config.userUuids || {};
+
+  if (userUuids[username]) {
+    return userUuids[username];
+  }
+
+  const newUuid = uuidv4();
+  userUuids[username] = newUuid;
+  saveConfig({ userUuids });
+
+  return newUuid;
 }
 
 function saveJavaPath(javaPath) {

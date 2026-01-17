@@ -60,6 +60,18 @@ See [BUILD.md](BUILD.md) for detailed build instructions.
 - [@chasem-dev](https://github.com/chasem-dev)
 - [@crimera](https://github.com/crimera)
 
+
+
 ## Disclaimer
 
 This launcher is for educational purposes only.
+
+This is an independent fan-made project and is **not affiliated with, endorsed by, or associated with** Hypixel Studios or Hytale in any way.
+
+⚠️ This software is provided **“as is”**, without any warranty of any kind.  
+The author takes no responsibility for how this software is used.
+
+🛑 If Hypixel Studios or Hytale requests its removal, this project will be taken down immediately.
+
+❤️ Please support the official game by purchasing it when it becomes available.
+

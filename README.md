@@ -1,78 +1,184 @@
-# Hytale F2P Launcher
+# 🎮 Hytale F2P Launcher | Multiplayer Support
 
-A simple offline launcher for Hytale that allows you to play the game for free.
+<div align="center">
 
-## Features
+![Version](https://img.shields.io/badge/Version-1.0.2-green?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Educational-blue?style=for-the-badge)
 
-- Offline gameplay support
-- Automatic game file download and installation
-- Java runtime management
-- Clean and modern interface
+**A modern, cross-platform offline launcher for Hytale with automatic updates and multiplayer support (windows users & non-premium only)**
 
-## Installation
+[![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/network/members)
 
-### Windows
+⭐ **If you find this project useful, please give it a star!** ⭐
+🛑 **Found a problem? Open an issue! I’m on Windows, so I can’t test on macOS or Linux.** 🛑
+</div>
 
-1. Download the latest release from the [Releases](https://github.com/amiayweb/Hytale-F2P/releases) page
-2. Run `Hytale F2P Launcher.exe` to install
-3. Launch the application from your desktop or start menu
+---
 
-### Linux
+## ✨ Features
 
+🎯 **Core Features**
+- 🔄 **Automatic Updates** - Smart version checking and seamless game updates
+- 💾 **Data Preservation** - Intelligent UserData backup and restoration during updates
+- 🌐 **Cross-Platform** - Full support for Windows, Linux (X11/Wayland), and macOS
+- ☕ **Java Management** - Automatic Java runtime detection and installation
+- 🎮 **Multiplayer Support** - Automatic multiplayer client installation (Windows)
+
+🛡️ **Advanced Features**
+- 📁 **Custom Installation** - Choose your own installation directory
+- 🔍 **Smart Detection** - Automatic game and dependency detection
+- 🗂️ **Mod Support** - Built-in mod management system
+- 💬 **Player Chat** - Integrated chat system for community interaction
+- 📰 **News Feed** - Stay updated with the latest Hytale news
+- 🎨 **Modern UI** - Clean, responsive interface with dark theme
+
+---
+
+## 🚀 Quick Start
+
+### 📥 Installation
+
+#### Windows
+1. Download the latest `Hytale-F2P.exe` from [**Releases**](https://github.com/amiayweb/Hytale-F2P/releases)
+2. Run the installer
+3. Launch from desktop or start menu
+
+#### Linux
 See [BUILD.md](BUILD.md) for detailed build instructions.
 
-### macOS
-
+#### macOS  
 See [BUILD.md](BUILD.md) for detailed build instructions.
 
-## Usage
+#### 🖥️ How to create server (Windows Only)?
+1. Download the server files directly from: `http://3.10.208.30:3002/server`
+2. Replace the existing files in your `HytaleF2P` installation folder
+3. Run the server launcher (.bat) to start hosting your own Hytale server
+   
+### 🎮 Usage
 
-1. Enter your player name
-2. Click "PLAY"
-3. The launcher will automatically download and install required files
-4. The game will launch automatically
+1. **Enter your player name**
+2. **Click "PLAY"** 
+3. **Automatic setup** - The launcher handles everything automatically
+4. **Game launches** - Enjoy playing Hytale!
 
-## Building from Source
+---
 
-See [BUILD.md](BUILD.md) for detailed build instructions.
+## 🛠️ Building from Source
+
+See [BUILD.md](BUILD.md) for comprehensive build instructions.
+
+---
 
 ## 📋 Changelog
 
-### v1.0.1
--  Added custom installation feature with collapsible options
--  Installation folder selection with file browser dialog
--  Launcher now stays always on top
--  Smart game detection - hides custom installation if already installed
--  Uninstall button for easy game removal
--  Dynamic button text: "INSTALL" when not installed, "PLAY" when ready
--  Fixed installation paths to properly use custom directory
--  Improved UI layout to prevent overflow issues
+### 🆕 v2.0.0 *(Latest)*
+- ✅ **Automatic Game Update System** - Smart version checking and seamless updates
+- ✅ **Partial Automatic Launcher Update System** - This will inform you when I release a new update.
+- 🛡️ **UserData Preservation** - Intelligent backup/restore of game saves during updates
+- 🐧 **Enhanced Linux Support** - Full Wayland and X11 compatibility  
+- 🔄 **Multiplayer Auto-Install** - Automatic multiplayer client setup on updates (Windows)
+- 📡 **API Integration** - Real-time version checking and client management
+- 🎨 **UI Improvements** - Added contributor credits footer
+- 🔄 **Complete Launcher Overhaul** - Total redesign of the launcher architecture and interface
+- 🗂️ **Integrated Mod Manager** - Built-in mod installation, management
+- 💬 **Community Chat System** - Real-time chat for launcher users to connect and communicate
 
-### v1.0.0
--  First version
--  Simple installation
--  Offline gameplay support
--  Automatic Java runtime management
--  Clean and modern interface
+### 🔧 v1.0.1
+- 📁 **Custom Installation** - Choose installation directory with file browser
+- 🏠 **Always on Top** - Launcher stays visible during installation
+- 🧠 **Smart Detection** - Automatic game detection and UI adaptation  
+- 🗑️ **Uninstall Feature** - Easy game removal with one click
+- 🔄 **Dynamic UI** - "INSTALL" vs "PLAY" button based on game state
+- 🛠️ **Path Management** - Proper custom directory handling
+- 💫 **UI Polish** - Improved layout and overflow prevention
+
+### 🎉 v1.0.0 *(Initial Release)*
+- 🎮 **Offline Gameplay** - Play Hytale without internet connection
+- ⚡ **Auto Installation** - One-click game setup
+- ☕ **Java Management** - Automatic Java runtime handling
+- 🎨 **Modern Interface** - Clean, intuitive design
+- 🌟 **First Release** - Core launcher functionality
+
+---
 
 ## 👥 Contributors
 
-- [@chasem-dev](https://github.com/chasem-dev)
-- [@crimera](https://github.com/crimera)
-- [@sanasol](https://github.com/sanasol)
+<div align="center">
+
+**Made with ❤️ by the community**
+
+[![Contributors](https://contrib.rocks/image?repo=amiayweb/Hytale-F2P)](https://github.com/amiayweb/Hytale-F2P/graphs/contributors)
+
+</div>
+
+### 🏆 Project Creator
+- [**@amiayweb**](https://github.com/amiayweb) - *Lead Developer & Project Creator*
+
+### 🌟 Contributors  
+- [**@chasem-dev**](https://github.com/chasem-dev) - *Issues fixer*
+- [**@crimera**](https://github.com/crimera) - *Issues fixer*  
+- [**@sanasol**](https://github.com/sanasol) - *Issues fixer*
+- [**@Terromur**](https://github.com/Terromur) - *Issues fixer*
+- [**@Citeli-py**](https://github.com/Citeli-py) - *Issues fixer*
+- [**@ericiskoolbeans**](https://github.com/ericiskoolbeans) - *Beta Tester*
+
+---
+
+## 📊 GitHub Stats
+
+<div align="center">
+
+![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
+![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
+![GitHub issues](https://img.shields.io/github/issues/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
+![GitHub downloads](https://img.shields.io/github/downloads/amiayweb/Hytale-F2P/total?style=for-the-badge&logo=github)
+
+</div>
 
 
+## 📞 Support
 
-## Disclaimer
+<div align="center">
 
-This launcher is for educational purposes only.
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?style=for-the-badge&logo=github)](https://github.com/amiayweb/Hytale-F2P/issues)
+[![Discussions](https://img.shields.io/badge/GitHub-Discussions-blue?style=for-the-badge&logo=github)](https://github.com/amiayweb/Hytale-F2P/discussions)
 
-This is an independent fan-made project and is **not affiliated with, endorsed by, or associated with** Hypixel Studios or Hytale in any way.
+**Need help?** Open an [issue](https://github.com/amiayweb/Hytale-F2P/issues) or start a [discussion](https://github.com/amiayweb/Hytale-F2P/discussions)!
 
-⚠️ This software is provided **“as is”**, without any warranty of any kind.  
-The author takes no responsibility for how this software is used.
+</div>
 
-🛑 If Hypixel Studios or Hytale requests its removal, this project will be taken down immediately.
+---
 
-❤️ Please support the official game by purchasing it when it becomes available.
+## ⚖️ Legal Disclaimer
+
+<div align="center">
+
+⚠️ **Important Notice** ⚠️
+
+</div>
+
+This launcher is created for **educational purposes only**.
+
+🏛️ **Not Official** - This is an independent fan project **not affiliated with, endorsed by, or associated with** Hypixel Studios or Hytale.
+
+🛡️ **No Warranty** - This software is provided **"as is"** without any warranty of any kind.
+
+📝 **Responsibility** - The authors take no responsibility for how this software is used.
+
+🛑 **Takedown Policy** - If Hypixel Studios or Hytale requests removal, this project will be taken down immediately.
+
+❤️ **Support Official** - Please support the official game by purchasing it when available.
+
+---
+
+<div align="center">
+
+**⭐ Star this project if you found it helpful! ⭐**
+
+*Made with ❤️ by [@amiayweb](https://github.com/amiayweb) and the amazing community*
+[![Star History Chart](https://api.star-history.com/svg?repos=amiayweb/Hytale-F2P&type=date&legend=top-left)](https://www.star-history.com/#amiayweb/Hytale-F2P&type=date&legend=top-left)
+</div>
+
 

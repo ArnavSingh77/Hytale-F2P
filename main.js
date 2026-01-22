@@ -8,7 +8,7 @@ const profileManager = require('./backend/managers/profileManager');
 
 logger.interceptConsole();
 
-// Single instance lock - prevent multiple launcher instances
+// Single instance lock
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
@@ -16,7 +16,6 @@ if (!gotTheLock) {
   app.quit();
 } else {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, focus our window instead
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -96,9 +95,34 @@ function toggleDiscordRPC(enabled) {
       console.log('Discord RPC disconnected successfully');
     } catch (error) {
       console.error('Error disconnecting Discord RPC:', error.message);
-      discordRPC = null; // Force null même en cas d'erreur
+      discordRPC = null; 
     }
   }
+}
+
+function createSplashScreen() {
+  const splashWindow = new BrowserWindow({
+    width: 500,
+    height: 350,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    skipTaskbar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  splashWindow.loadFile('GUI/splash.html');
+  splashWindow.center();
+
+  // close splash after 2.5s , need to implement a files check or whatever. just mock for now 
+  setTimeout(() => {
+    splashWindow.close();
+    createWindow();
+  }, 2500);
 }
 
 function createWindow() {
@@ -111,6 +135,7 @@ function createWindow() {
     resizable: true,
     alwaysOnTop: false,
     backgroundColor: '#090909',
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -121,6 +146,10 @@ function createWindow() {
   });
 
   mainWindow.loadFile('GUI/index.html');
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
   // Cleanup Discord RPC when window is closed
   mainWindow.on('closed', () => {
@@ -195,7 +224,7 @@ app.whenReady().then(async () => {
   // Initialize Profile Manager (runs migration if needed)
   profileManager.init();
 
-  createWindow();
+  createSplashScreen();
 
   setTimeout(async () => {
     let timeoutReached = false;

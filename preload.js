@@ -51,6 +51,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdatePopup: (callback) => {
     ipcRenderer.on('show-update-popup', (event, data) => callback(data));
   },
+  onUpdateAvailable: (callback) => {
+    ipcRenderer.on('update-available', (event, data) => callback(data));
+  },
+  onUpdateDownloadProgress: (callback) => {
+    ipcRenderer.on('update-download-progress', (event, data) => callback(data));
+  },
+  onUpdateDownloaded: (callback) => {
+    ipcRenderer.on('update-downloaded', (event, data) => callback(data));
+  },
+  quitAndInstallUpdate: () => ipcRenderer.invoke('quit-and-install-update'),
   
   getGpuInfo: () => ipcRenderer.invoke('get-gpu-info'),
   saveGpuPreference: (gpuPreference) => ipcRenderer.invoke('save-gpu-preference', gpuPreference),

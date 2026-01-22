@@ -43,8 +43,16 @@ class AppUpdater {
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
         this.mainWindow.webContents.send('update-available', {
           version: info.version,
+          newVersion: info.version,
+          currentVersion: app.getVersion(),
           releaseName: info.releaseName,
           releaseNotes: info.releaseNotes
+        });
+        // Also send to the old popup handler for compatibility
+        this.mainWindow.webContents.send('show-update-popup', {
+          currentVersion: app.getVersion(),
+          newVersion: info.version,
+          version: info.version
         });
       }
     });

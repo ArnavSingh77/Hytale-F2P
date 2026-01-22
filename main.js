@@ -731,6 +731,7 @@ ipcMain.handle('check-for-updates', async () => {
       return {
         updateAvailable: result?.updateInfo ? true : false,
         version: result?.updateInfo?.version,
+        newVersion: result?.updateInfo?.version,
         currentVersion: app.getVersion()
       };
     }

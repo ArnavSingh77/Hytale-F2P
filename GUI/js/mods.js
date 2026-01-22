@@ -1,5 +1,5 @@
 
-const API_KEY = '$2a$10$bqk254NMZOWVTzLVJCcxEOmhcyUujKxA5xk.kQCN9q0KNYFJd5b32';
+let API_KEY = null;
 const CURSEFORGE_API = 'https://api.curseforge.com/v1';
 const HYTALE_GAME_ID = 70216;
 
@@ -11,6 +11,15 @@ let modsPageSize = 20;
 let modsTotalPages = 1;
 
 export async function initModsManager() {
+  try {
+    if (window.electronAPI && window.electronAPI.getEnvVar) {
+      API_KEY = await window.electronAPI.getEnvVar('CURSEFORGE_API_KEY');
+      console.log('Loaded API Key:', API_KEY ? 'Yes' : 'No');
+    }
+  } catch (err) {
+    console.error('Failed to load API Key:', err);
+  }
+
   setupModsEventListeners();
   await loadInstalledMods();
   await loadBrowseMods();
@@ -417,10 +426,10 @@ async function deleteMod(modId) {
   const mod = installedMods.find(m => m.id === modId);
   if (!mod) return;
 
-  const confirmMsg = window.i18n ? 
+  const confirmMsg = window.i18n ?
     window.i18n.t('mods.confirmDelete').replace('{name}', mod.name) + ' ' + window.i18n.t('mods.confirmDeleteDesc') :
     `Are you sure you want to delete "${mod.name}"? This action cannot be undone.`;
-  
+
   showConfirmModal(
     confirmMsg,
     async () => {

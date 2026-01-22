@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const fs = require('fs');
 const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
 const UpdateManager = require('./backend/updateManager');
@@ -28,7 +29,7 @@ let updateManager;
 let discordRPC = null;
 
 // Discord Rich Presence setup
-const DISCORD_CLIENT_ID = '1462244937868513373';
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 
 function initDiscordRPC() {
   try {
@@ -688,6 +689,10 @@ const os = require('os');
 
 ipcMain.handle('get-local-app-data', async () => {
   return process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
+});
+
+ipcMain.handle('get-env-var', async (event, key) => {
+  return process.env[key];
 });
 
 ipcMain.handle('get-user-id', async () => {

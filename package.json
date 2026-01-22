@@ -24,7 +24,7 @@
     "mod-manager",
     "chat"
   ],
-    "maintainers": [
+  "maintainers": [
     {
       "name": "Terromur",
       "url": "https://github.com/Terromur"
@@ -33,7 +33,7 @@
       "name": "Fari Gading",
       "email": "fazrigading@gmail.com",
       "url": "https://github.com/fazrigading"
-    }    
+    }
   ],
   "author": {
     "name": "AMIAY",
@@ -48,6 +48,7 @@
     "adm-zip": "^0.5.10",
     "axios": "^1.6.0",
     "discord-rpc": "^4.0.1",
+    "dotenv": "^17.2.3",
     "tar": "^6.2.1",
     "uuid": "^9.0.1"
   },
@@ -66,29 +67,75 @@
       "preload.js",
       "backend/**/*",
       "GUI/**/*",
-      "package.json"
+      "package.json",
+      ".env"
     ],
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64", "arm64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "icon.ico"
     },
     "linux": {
       "target": [
-        { "target": "AppImage", "arch": ["x64", "arm64"] },
-        { "target": "deb", "arch": ["x64", "arm64"] },
-        { "target": "rpm", "arch": ["x64", "arm64"] }, 
-        { "target": "pacman", "arch": ["x64", "arm64"] }
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "pacman",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "icon": "build/icon.png",
       "category": "Game"
     },
     "mac": {
       "target": [
-        { "target": "dmg", "arch": ["universal"] },
-        { "target": "zip", "arch": ["universal"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
       ],
       "icon": "build/icon.icns",
       "category": "public.app-category.games"

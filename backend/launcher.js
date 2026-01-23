@@ -17,6 +17,8 @@ const {
   loadDiscordRPC,
   saveLanguage,
   loadLanguage,
+  saveCloseLauncherOnStart,
+  loadCloseLauncherOnStart,
   saveModsToConfig,
   loadModsFromConfig,
   getUuidForUser,
@@ -123,6 +125,10 @@ module.exports = {
   // Language functions
   saveLanguage,
   loadLanguage,
+  
+  // Close Launcher functions
+  saveCloseLauncherOnStart,
+  loadCloseLauncherOnStart,
   
   // GPU Preference functions
   saveGpuPreference,

@@ -8,4 +8,7 @@ pkg/
 
 # Package files
 *.tar.zst
+*.zst.DS_Store
 *.zst
+bun.lockb
+.env

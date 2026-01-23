@@ -156,6 +156,15 @@ function loadLanguage() {
   return config.language || 'en';
 }
 
+function saveCloseLauncherOnStart(enabled) {
+  saveConfig({ closeLauncherOnStart: !!enabled });
+}
+
+function loadCloseLauncherOnStart() {
+  const config = loadConfig();
+  return config.closeLauncherOnStart !== undefined ? config.closeLauncherOnStart : false;
+}
+
 function saveModsToConfig(mods) {
   try {
     const config = loadConfig();
@@ -331,5 +340,8 @@ module.exports = {
   resetCurrentUserUuid,
   // GPU Preference exports
   saveGpuPreference,
-  loadGpuPreference
+  loadGpuPreference,
+  // Close Launcher export
+  saveCloseLauncherOnStart,
+  loadCloseLauncherOnStart
 };

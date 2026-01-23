@@ -162,18 +162,51 @@ async function getModsPath(customInstallPath = null) {
 
     const modsPath = path.join(userDataPath, 'Mods');
     const disabledModsPath = path.join(userDataPath, 'DisabledMods');
+    const profilesPath = path.join(userDataPath, 'Profiles');
 
     if (!fs.existsSync(modsPath)) {
+      // Ensure the Mods directory exists
       fs.mkdirSync(modsPath, { recursive: true });
     }
     if (!fs.existsSync(disabledModsPath)) {
       fs.mkdirSync(disabledModsPath, { recursive: true });
+    }
+    if (!fs.existsSync(profilesPath)) {
+      fs.mkdirSync(profilesPath, { recursive: true });
     }
 
     return modsPath;
   } catch (error) {
     console.error('Error getting mods path:', error);
     throw error;
+  }
+}
+
+function getProfilesDir(customInstallPath = null) {
+  try {
+    // get UserData path
+    let installPath = customInstallPath;
+    if (!installPath) {
+        const configFile = path.join(DEFAULT_APP_DIR, 'config.json');
+        if (fs.existsSync(configFile)) {
+            const config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+            installPath = config.installPath || '';
+        }
+    }
+    if (!installPath) installPath = getAppDir();
+    
+    const gameLatest = path.join(installPath, 'release', 'package', 'game', 'latest');
+    const userDataPath = findUserDataPath(gameLatest);
+    const profilesDir = path.join(userDataPath, 'Profiles');
+    
+    if (!fs.existsSync(profilesDir)) {
+        fs.mkdirSync(profilesDir, { recursive: true });
+    }
+    
+    return profilesDir;
+  } catch (err) {
+      console.error('Error getting profiles dir:', err);
+      return null;
   }
 }
 
@@ -191,5 +224,6 @@ module.exports = {
   findClientPath,
   findUserDataPath,
   findUserDataRecursive,
-  getModsPath
+  getModsPath,
+  getProfilesDir
 };

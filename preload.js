@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   installGame: (playerName, javaPath, installPath) => ipcRenderer.invoke('install-game', playerName, javaPath, installPath),
   closeWindow: () => ipcRenderer.invoke('window-close'),
   minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
+  maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
+  getVersion: () => ipcRenderer.invoke('get-version'),
   saveUsername: (username) => ipcRenderer.invoke('save-username', username),
   loadUsername: () => ipcRenderer.invoke('load-username'),
   saveChatUsername: (chatUsername) => ipcRenderer.invoke('save-chat-username', chatUsername),
@@ -19,6 +21,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadDiscordRPC: () => ipcRenderer.invoke('load-discord-rpc'),
   saveLanguage: (language) => ipcRenderer.invoke('save-language', language),
   loadLanguage: () => ipcRenderer.invoke('load-language'),
+  saveCloseLauncher: (enabled) => ipcRenderer.invoke('save-close-launcher', enabled),
+  loadCloseLauncher: () => ipcRenderer.invoke('load-close-launcher'),
   selectInstallPath: () => ipcRenderer.invoke('select-install-path'),
   browseJavaPath: () => ipcRenderer.invoke('browse-java-path'),
   isGameInstalled: () => ipcRenderer.invoke('is-game-installed'),
@@ -30,6 +34,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openGameLocation: () => ipcRenderer.invoke('open-game-location'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   loadSettings: () => ipcRenderer.invoke('load-settings'),
+  getEnvVar: (key) => ipcRenderer.invoke('get-env-var', key),
   getLocalAppData: () => ipcRenderer.invoke('get-local-app-data'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
   loadInstalledMods: (modsPath) => ipcRenderer.invoke('load-installed-mods', modsPath),
@@ -44,6 +49,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onProgressComplete: (callback) => {
     ipcRenderer.on('progress-complete', () => callback());
   },
+  onInstallationStart: (callback) => {
+    ipcRenderer.on('installation-start', () => callback());
+  },
+  onInstallationEnd: (callback) => {
+    ipcRenderer.on('installation-end', () => callback());
+  },
   getUserId: () => ipcRenderer.invoke('get-user-id'),
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   openDownloadPage: () => ipcRenderer.invoke('open-download-page'),
@@ -51,7 +62,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdatePopup: (callback) => {
     ipcRenderer.on('show-update-popup', (event, data) => callback(data));
   },
-  
+
   getGpuInfo: () => ipcRenderer.invoke('get-gpu-info'),
   saveGpuPreference: (gpuPreference) => ipcRenderer.invoke('save-gpu-preference', gpuPreference),
   loadGpuPreference: () => ipcRenderer.invoke('load-gpu-preference'),

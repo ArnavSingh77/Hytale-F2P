@@ -1,19 +1,36 @@
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const fs = require('fs');
-const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
+const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
+
 const UpdateManager = require('./backend/updateManager');
 const logger = require('./backend/logger');
 const profileManager = require('./backend/managers/profileManager');
 
 logger.interceptConsole();
 
+// Single instance lock
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  console.log('Another instance is already running. Quitting...');
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
 let mainWindow;
 let updateManager;
 let discordRPC = null;
 
 // Discord Rich Presence setup
-const DISCORD_CLIENT_ID = '1462244937868513373';
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 
 function initDiscordRPC() {
   try {
@@ -80,19 +97,47 @@ function toggleDiscordRPC(enabled) {
       console.log('Discord RPC disconnected successfully');
     } catch (error) {
       console.error('Error disconnecting Discord RPC:', error.message);
-      discordRPC = null; // Force null même en cas d'erreur
+      discordRPC = null; 
     }
   }
+}
+
+function createSplashScreen() {
+  const splashWindow = new BrowserWindow({
+    width: 500,
+    height: 350,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    skipTaskbar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  splashWindow.loadFile('GUI/splash.html');
+  splashWindow.center();
+
+  // close splash after 2.5s , need to implement a files check or whatever. just mock for now 
+  setTimeout(() => {
+    splashWindow.close();
+    createWindow();
+  }, 2500);
 }
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
+    minWidth: 900,
+    minHeight: 600,
     frame: false,
-    resizable: false,
+    resizable: true,
     alwaysOnTop: false,
     backgroundColor: '#090909',
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -103,6 +148,10 @@ function createWindow() {
   });
 
   mainWindow.loadFile('GUI/index.html');
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
   // Cleanup Discord RPC when window is closed
   mainWindow.on('closed', () => {
@@ -141,7 +190,18 @@ function createWindow() {
     if (input.key === 'F5') {
       event.preventDefault();
     }
+
+    // Close application shortcuts
+    const isMac = process.platform === 'darwin';
+    const quitShortcut = (isMac && input.meta && input.key.toLowerCase() === 'q') || 
+                         (!isMac && input.control && input.key.toLowerCase() === 'q') ||
+                         (!isMac && input.alt && input.key === 'F4');
+
+    if (quitShortcut) {
+      app.quit();
+    }
   });
+
 
 
   mainWindow.webContents.on('context-menu', (e) => {
@@ -152,7 +212,9 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  const packageJson = require('./package.json');
   console.log('=== HYTALE F2P LAUNCHER STARTED ===');
+  console.log('Launcher version:', packageJson.version);
   console.log('Platform:', process.platform);
   console.log('Architecture:', process.arch);
   console.log('Electron version:', process.versions.electron);
@@ -177,7 +239,7 @@ app.whenReady().then(async () => {
   // Initialize Profile Manager (runs migration if needed)
   profileManager.init();
 
-  createWindow();
+  createSplashScreen();
 
   setTimeout(async () => {
     let timeoutReached = false;
@@ -288,10 +350,9 @@ app.on('window-all-closed', () => {
 
   cleanupDiscordRPC();
 
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
+
 
 ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, gpuPreference) => {
   try {
@@ -310,7 +371,18 @@ ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, g
 
     const result = await launchGameWithVersionCheck(playerName, progressCallback, javaPath, installPath, gpuPreference);
 
+    if (result.success && result.launched) {
+      const closeOnStart = loadCloseLauncherOnStart();
+      if (closeOnStart) {
+        console.log('Close Launcher on start enabled, quitting application...');
+        setTimeout(() => {
+          app.quit();
+        }, 1000);
+      }
+    }
+
     return result;
+
   } catch (error) {
     console.error('Launch error:', error);
     const errorMessage = error.message || error.toString();
@@ -327,6 +399,11 @@ ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, g
 
 ipcMain.handle('install-game', async (event, playerName, javaPath, installPath) => {
   try {
+    // Signal installation start
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('installation-start');
+    }
+
     const progressCallback = (message, percent, speed, downloaded, total) => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         const data = {
@@ -342,10 +419,20 @@ ipcMain.handle('install-game', async (event, playerName, javaPath, installPath) 
 
     const result = await installGame(playerName, progressCallback, javaPath, installPath);
 
+    // Signal installation end
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('installation-end');
+    }
+
     return result;
   } catch (error) {
     console.error('Install error:', error);
     const errorMessage = error.message || error.toString();
+
+    // Signal installation end on error too
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('installation-end');
+    }
 
     return { success: false, error: errorMessage };
   }
@@ -414,7 +501,17 @@ ipcMain.handle('load-language', () => {
   return loadLanguage();
 });
 
+ipcMain.handle('save-close-launcher', (event, enabled) => {
+  saveCloseLauncherOnStart(enabled);
+  return { success: true };
+});
+
+ipcMain.handle('load-close-launcher', () => {
+  return loadCloseLauncherOnStart();
+});
+
 ipcMain.handle('select-install-path', async () => {
+
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
     title: 'Select Installation Folder'
@@ -626,6 +723,10 @@ ipcMain.handle('get-local-app-data', async () => {
   return process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
 });
 
+ipcMain.handle('get-env-var', async (event, key) => {
+  return process.env[key];
+});
+
 ipcMain.handle('get-user-id', async () => {
   try {
     const { getOrCreatePlayerId } = require('./backend/launcher');
@@ -736,10 +837,9 @@ ipcMain.handle('open-download-page', async () => {
     await shell.openExternal(updateManager.getDownloadUrl());
 
     setTimeout(() => {
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.close();
-      }
+      app.quit();
     }, 1000);
+
 
     return { success: true };
   } catch (error) {
@@ -782,15 +882,29 @@ ipcMain.handle('get-detected-gpu', () => {
 });
 
 ipcMain.handle('window-close', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.close();
-  }
+  app.quit();
 });
+
 
 ipcMain.handle('window-minimize', () => {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.minimize();
   }
+});
+
+ipcMain.handle('window-maximize', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.handle('get-version', () => {
+  const packageJson = require('./package.json');
+  return packageJson.version;
 });
 
 ipcMain.handle('get-log-directory', () => {

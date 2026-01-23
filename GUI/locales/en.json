@@ -4,14 +4,12 @@
     "mods": "Mods",
     "news": "News",
     "chat": "Players Chat",
-    "settings": "Settings",
-    "skins": "Skins"
+    "settings": "Settings"
   },
   "header": {
     "playersLabel": "Players:",
     "manageProfiles": "Manage Profiles",
-    "defaultProfile": "Default",
-    "f2p": "FREE TO PLAY"
+    "defaultProfile": "Default"
   },
   "install": {
     "title": "FREE TO PLAY LAUNCHER",
@@ -124,7 +122,10 @@
     "logsCopy": "Copy",
     "logsRefresh": "Refresh",
     "logsFolder": "Open Folder",
-    "logsLoading": "Loading logs..."
+    "logsLoading": "Loading logs...",
+    "closeLauncher": "Launcher Behavior",
+    "closeOnStart": "Close Launcher on game start",
+    "closeOnStartDescription": "Automatically close the launcher after Hytale has launched"
   },
   "uuid": {
     "modalTitle": "UUID Management",
@@ -147,10 +148,6 @@
   "discord": {
     "notificationText": "Join our Discord community!",
     "joinButton": "Join Discord"
-  },
-  "skins": {
-    "title": "Skins",
-    "comingSoon": "Skin customization coming soon..."
   },
   "common": {
     "confirm": "Confirm",

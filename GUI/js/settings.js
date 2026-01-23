@@ -5,7 +5,9 @@ let customJavaPath;
 let browseJavaBtn;
 let settingsPlayerName;
 let discordRPCCheck;
+let closeLauncherCheck;
 let gpuPreferenceRadios;
+
 
 // UUID Management elements
 let currentUuidDisplay;
@@ -161,7 +163,9 @@ function setupSettingsElements() {
   browseJavaBtn = document.getElementById('browseJavaBtn');
   settingsPlayerName = document.getElementById('settingsPlayerName');
   discordRPCCheck = document.getElementById('discordRPCCheck');
+  closeLauncherCheck = document.getElementById('closeLauncherCheck');
   gpuPreferenceRadios = document.querySelectorAll('input[name="gpuPreference"]');
+
 
   // UUID Management elements
   currentUuidDisplay = document.getElementById('currentUuid');
@@ -193,6 +197,11 @@ function setupSettingsElements() {
   if (discordRPCCheck) {
     discordRPCCheck.addEventListener('change', saveDiscordRPC);
   }
+
+  if (closeLauncherCheck) {
+    closeLauncherCheck.addEventListener('change', saveCloseLauncher);
+  }
+
 
   // UUID event listeners
   if (copyUuidBtn) {
@@ -348,6 +357,31 @@ async function loadDiscordRPC() {
   }
 }
 
+async function saveCloseLauncher() {
+  try {
+    if (window.electronAPI && window.electronAPI.saveCloseLauncher && closeLauncherCheck) {
+      const enabled = closeLauncherCheck.checked;
+      await window.electronAPI.saveCloseLauncher(enabled);
+    }
+  } catch (error) {
+    console.error('Error saving close launcher setting:', error);
+  }
+}
+
+async function loadCloseLauncher() {
+  try {
+    if (window.electronAPI && window.electronAPI.loadCloseLauncher) {
+      const enabled = await window.electronAPI.loadCloseLauncher();
+      if (closeLauncherCheck) {
+        closeLauncherCheck.checked = enabled;
+      }
+    }
+  } catch (error) {
+    console.error('Error loading close launcher setting:', error);
+  }
+}
+
+
 async function savePlayerName() {
   try {
     if (!window.electronAPI || !settingsPlayerName) return;
@@ -462,8 +496,10 @@ async function loadAllSettings() {
   await loadPlayerName();
   await loadCurrentUuid();
   await loadDiscordRPC();
+  await loadCloseLauncher();
   await loadGpuPreference();
 }
+
 
 async function openGameLocation() {
   try {

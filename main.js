@@ -1,4 +1,5 @@
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
@@ -446,6 +447,13 @@ ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, g
 
 ipcMain.handle('install-game', async (event, playerName, javaPath, installPath, branch) => {
   try {
+    console.log(`[IPC] install-game called with parameters:`);
+    console.log(`  - playerName: ${playerName}`);
+    console.log(`  - javaPath: ${javaPath}`);
+    console.log(`  - installPath: ${installPath}`);
+    console.log(`  - branch: ${branch}`);
+    console.log(`[IPC] branch type: ${typeof branch}, value: ${JSON.stringify(branch)}`);
+    
     // Signal installation start
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('installation-start');
@@ -625,6 +633,7 @@ ipcMain.handle('load-close-launcher', () => {
 });
 
 ipcMain.handle('select-install-path', async () => {
+
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
     title: 'Select Installation Folder'
@@ -742,8 +751,8 @@ ipcMain.handle('retry-download', async (event, retryData) => {
       console.log('[IPC] Full JRE retry data:', JSON.stringify(retryData, null, 2));
       
       const { retryJREDownload } = require('./backend/managers/javaManager');
-      await retryJREDownload(retryData.jreUrl, jreCacheFile, progressCallback);
       const jreCacheFile = path.join(retryData.cacheDir, retryData.fileName);
+      await retryJREDownload(retryData.jreUrl, jreCacheFile, progressCallback);
       
       return { success: true };
     }
@@ -928,6 +937,10 @@ const os = require('os');
 
 ipcMain.handle('get-local-app-data', async () => {
   return process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
+});
+
+ipcMain.handle('get-env-var', async (event, key) => {
+  return process.env[key];
 });
 
 ipcMain.handle('get-user-id', async () => {

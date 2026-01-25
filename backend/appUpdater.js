@@ -15,12 +15,6 @@ class AppUpdater {
   }
 
   setupAutoUpdater() {
-    // Enable dev mode for testing (reads dev-app-update.yml)
-    // Only enable in development, not in production builds
-    if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
-      autoUpdater.forceDevUpdateConfig = true;
-      console.log('Dev update mode enabled - using dev-app-update.yml');
-    }
 
     // Configure logger for electron-updater
     // Create a compatible logger interface

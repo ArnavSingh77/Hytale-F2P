@@ -103,40 +103,36 @@ async function downloadFile(url, dest, progressCallback, maxRetries = 5) {
       }
 
       const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': '*/*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://launcher.hytale.com/',
-        'Connection': 'keep-alive'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': '*/*'
       };
       
-      // Add Range header for resume capability
+      // Add Range header ONLY if resuming (startByte > 0)
       if (startByte > 0) {
         headers['Range'] = `bytes=${startByte}-`;
+        console.log(`Adding Range header: bytes=${startByte}-`);
+      } else {
+        console.log('Fresh download, no Range header');
       }
 
       const response = await axios({
         method: 'GET',
         url: url,
         responseType: 'stream',
-        timeout: 60000, // 60 secondes timeout
+        timeout: 60000,
         signal: controller.signal,
         headers: headers,
-        // Configuration Axios pour la robustesse réseau
         validateStatus: function (status) {
-          // Accept both 200 (full download) and 206 (partial content for resume)
           return (status >= 200 && status < 300) || status === 206;
         },
-        // Retry configuration
         maxRedirects: 5,
-        // Network resilience
-        family: 4 // Force IPv4
+        family: 4
       });
 
       const contentLength = response.headers['content-length'];
-      const totalSize = contentLength ? parseInt(contentLength, 10) + startByte : 0; // Adjust for resume
-      let downloaded = startByte; // Start with existing bytes
-      lastProgressTime = Date.now(); // Update time after response received
+      const totalSize = contentLength ? parseInt(contentLength, 10) + startByte : 0;
+      let downloaded = startByte;
+      lastProgressTime = Date.now();
       const startTime = Date.now();
 
       // Check network status before attempting download
@@ -344,7 +340,6 @@ async function downloadFile(url, dest, progressCallback, maxRetries = 5) {
         });
       });
 
-      // Si on arrive ici, le téléchargement a réussi
       return;
 
   } catch (error) {
@@ -375,6 +370,9 @@ async function downloadFile(url, dest, progressCallback, maxRetries = 5) {
     // Enhanced file cleanup with validation
     if (fs.existsSync(dest)) {
       try {
+        // HTTP 416 = Range Not Satisfiable, delete corrupted partial file
+        const isRangeError = error.message && error.message.includes('416');
+        
         // Check if file is corrupted (small or invalid) or if error is non-resumable
         const partialStats = fs.statSync(dest);
         const isResumableError = error.message && (
@@ -387,13 +385,14 @@ async function downloadFile(url, dest, progressCallback, maxRetries = 5) {
         // Check if download appears to be complete (close to expected PWR size)
         const isPossiblyComplete = partialStats.size >= 1500 * 1024 * 1024; // >= 1.5GB
         
-        if (partialStats.size < 1024 * 1024 || (!isResumableError && !isPossiblyComplete)) {
-          // Delete if file is too small OR error is non-resumable AND not possibly complete
-          console.log(`[Cleanup] Removing PWR file (${!isResumableError && !isPossiblyComplete ? 'non-resumable error' : 'too small'}): ${(partialStats.size / 1024 / 1024).toFixed(2)} MB`);
+        if (isRangeError || partialStats.size < 1024 * 1024 || (!isResumableError && !isPossiblyComplete)) {
+          // Delete if HTTP 416 OR file is too small OR error is non-resumable AND not possibly complete
+          const reason = isRangeError ? 'HTTP 416 range error' : (!isResumableError && !isPossiblyComplete ? 'non-resumable error' : 'too small');
+          console.log(`[Cleanup] Removing file (${reason}): ${(partialStats.size / 1024 / 1024).toFixed(2)} MB`);
           fs.unlinkSync(dest);
         } else {
           // Keep the file for resume on resumable errors or if possibly complete
-          console.log(`[Resume] Keeping PWR file (${isPossiblyComplete ? 'possibly complete' : 'for resume'}): ${(partialStats.size / 1024 / 1024).toFixed(2)} MB`);
+          console.log(`[Resume] Keeping file (${isPossiblyComplete ? 'possibly complete' : 'for resume'}): ${(partialStats.size / 1024 / 1024).toFixed(2)} MB`);
         }
       } catch (cleanupError) {
         console.warn('Could not handle partial file:', cleanupError.message);
@@ -552,6 +551,17 @@ async function retryDownload(url, dest, progressCallback, previousError = null) 
   if (!fs.existsSync(destDir)) {
     console.log('Creating cache directory:', destDir);
     fs.mkdirSync(destDir, { recursive: true });
+  }
+  
+  // CRITICAL: Delete partial file before manual retry to avoid HTTP 416
+  if (fs.existsSync(dest)) {
+    try {
+      const stats = fs.statSync(dest);
+      console.log(`[Retry] Deleting partial file before retry: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
+      fs.unlinkSync(dest);
+    } catch (err) {
+      console.warn('Could not delete partial file:', err.message);
+    }
   }
   
   try {

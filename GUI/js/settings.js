@@ -207,11 +207,6 @@ function setupSettingsElements() {
   }
 
 
-  if (closeLauncherCheck) {
-    closeLauncherCheck.addEventListener('change', saveCloseLauncher);
-  }
-
-
   // UUID event listeners
   if (copyUuidBtn) {
     copyUuidBtn.addEventListener('click', copyCurrentUuid);
@@ -371,31 +366,6 @@ async function loadDiscordRPC() {
     console.error('Error loading Discord RPC setting:', error);
   }
 }
-
-async function saveCloseLauncher() {
-  try {
-    if (window.electronAPI && window.electronAPI.saveCloseLauncher && closeLauncherCheck) {
-      const enabled = closeLauncherCheck.checked;
-      await window.electronAPI.saveCloseLauncher(enabled);
-    }
-  } catch (error) {
-    console.error('Error saving close launcher setting:', error);
-  }
-}
-
-async function loadCloseLauncher() {
-  try {
-    if (window.electronAPI && window.electronAPI.loadCloseLauncher) {
-      const enabled = await window.electronAPI.loadCloseLauncher();
-      if (closeLauncherCheck) {
-        closeLauncherCheck.checked = enabled;
-      }
-    }
-  } catch (error) {
-    console.error('Error loading close launcher setting:', error);
-  }
-}
-
 
 async function saveCloseLauncher() {
   try {

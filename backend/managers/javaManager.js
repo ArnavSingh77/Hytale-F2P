@@ -406,5 +406,6 @@ module.exports = {
   getJavaDetection,
   downloadJRE,
   extractJRE,
+  retryJREDownload,
   JAVA_EXECUTABLE
 };

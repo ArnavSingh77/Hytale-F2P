@@ -638,9 +638,6 @@ function setupUI() {
   // Setup retry button
   setupRetryButton();
 
-  // Setup draggable progress bar
-  setupProgressDrag();
-
   lockPlayButton(true);
 
   setTimeout(() => {
@@ -740,6 +737,7 @@ window.LauncherUI = {
 };
 
 // Make installation effects globally available
+
 
 // Draggable progress bar functionality
 function setupProgressDrag() {

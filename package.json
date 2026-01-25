@@ -114,11 +114,7 @@
         }
       ],
       "icon": "build/icon.png",
-      "category": "Game",
-      "pacman": {
-        "compression": "zstd",
-        "artifactName": "${productName}-${version}-${arch}.pkg.tar.zst"
-      }
+      "category": "Game"
     },
     "mac": {
       "target": [

@@ -22,12 +22,21 @@ jobs:
                 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm' 
-      - run: npm ci
+          cache: 'npm'
+
+      # ONLY RUNS ON LINUX: Required for pacman/bsdtar
+      - name: Install Linux build dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
 
       - name: Build for ${{ matrix.os }}
         run: npm run build:${{ matrix.platform }}

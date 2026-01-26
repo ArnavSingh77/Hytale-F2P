@@ -120,7 +120,7 @@
       <td colspan="3" align="center">
         Windows 10/11 (64-bit; X64/ARM64) | Linux (x64/ARM64) | macOS (Apple Silicon only)
         <br />
-        <small><i>⚠️ Note: macOS Intel (x86) is not yet supported <a href="#fn1" id="ref1">1</a></sup></i></small>
+        <small><i>⚠️ Note: macOS Intel (x86) is not yet supported <sup><a href="#fn1" id="ref1">1</a></sup></i></small>
       </td>
     </tr>
     <tr>
@@ -131,7 +131,7 @@
     </tr>
     <tr>
       <td><b>🧠 RAM</b></td>
-      <td>8GB (Dedicated) / 12GB (iGPU)</td>
+      <td>8GB (dGPU)<sup><a href="#fn1" id="ref2">2</a></sup> /<br>12GB (iGPU)<sup><a href="#fn1" id="ref3">3</a></sup></td>
       <td>16 GB</td>
       <td>32 GB</td>
     </tr>
@@ -156,7 +156,9 @@
   </tbody>
 </table>
 </div>
-<p id="fn1"><sup>1</sup> Hytale did not provide game files for macOS Intel, yet.</p>
+<p id="fn1"><sup>Note 1</sup> Hytale did not provide game files for macOS Intel, yet.</p>
+<p id="fn2"><sup>Note 2</sup> Using Discrete/Dedicated GPU (dGPU) must have 8 GB RAM minimum.</p>
+<p id="fn3"><sup>Note 3</sup> Using Integrated GPU (dGPU) must have 12 GB RAM minimum.</p>
 
 
 
@@ -209,24 +211,37 @@
 3. **Permissions & Execution:**
    * **AppImage:** Make the file executable and run it:
      ```bash
-     chmod +x Hytale-F2P-Launcher.AppImage
-     ./Hytale-F2P-Launcher.AppImage
+     chmod +x hytale-f2p-launcher.AppImage
+     ./hytale-f2p-launcher.AppImage
      ```
-   * **Fedora (dnf):** Install the RPM:
+   * **Ubuntu/Debian-based or Fedora/RHEL-based:** Install the DEB/RPM:
      ```bash
-     sudo dnf install ./Hytale-F2P-Launcher.rpm
-     ```
-   * **Debian/Ubuntu (apt):** Install the DEB:
-     ```bash
-     sudo apt install ./Hytale-F2P-Launcher.deb
+     # Fedora/RHEL-based
+     sudo dnf install hytale-f2p-launcher.rpm
+     # Debian/Ubuntu
+     sudo apt install -y libasound2 libpng16-16 libpng-dev libicu76
+     sudo dpkg -i hytale-f2p-launcher.deb
      ```
    * **Arch Linux (pacman):** Install the package using:
      ```bash
-     sudo pacman -U /path/to/Hytale-F2P-Launcher.pkg.tar.zst
+     # Stable Build
+     sudo pacman -U hytale-f2p-launcher.pkg.tar.zst
+     # Development Build
+     yay -S hytale-f2p-git # or
+     paru -S hytale-f2p-git
+     # Manual Build
+     git clone https://aur.archlinux.org/hytale-f2p-git.git
+     cd hytale-f2p-git
+     makepkg -si
      ```
+
+> [!NOTE]
+> Make sure to adjust the filename correctly with the version and the architecture type. TIP: Use `cd` command to the package location.
+
 4. **Troubleshooting:**
    * **FUSE:** If the AppImage fails to launch on newer distributions, ensure `libfuse2` (or `fuse2` on Arch/Fedora) is installed.
    * **Desktop Entry:** After installing via `.rpm`, `.deb`, or `.pkg.tar.zst`, the launcher should automatically appear in your App Library/Grid.
+   * Missing libxcrypt.so.1: Install `libxcrypt-compat` using your package manager
 
 ---
 
@@ -286,25 +301,25 @@ The `.zip` version is useful for users who prefer a portable installation or nee
 
 ## 🛠️ Building from Source
 
-See [BUILD.md](BUILD.md) for comprehensive build instructions.
+See [BUILD.md](docs/BUILD.md) for comprehensive build instructions.
 
 ---
 
 ## 📋 Changelog
 
-### 🆕 v2.1.0
-
-- 🚨 **Auto-Retry Downloads and Auto-Patch Files** —  
-- ⚡ **Hardware Acceleration** — 
-- 👨‍💻 **In-App Logging** — 
-- 🛠️ **Repair Button** — Y
-- 🔎 **Browse CurseForge Mods** — Browsing mods now easier with our dedicated CurseForge API Key.
-- 🌎 **Fixes and Release New Translation** — Fixed 🇪🇸 🇧🇷 and added more translation for current build. Turkish 🇹🇷 language now added.
-
-
+### 🆕 v2.1.1
+- 🛠️ **Fix EPERM** Issue
+- 🅰️ **Adds Better Arch Build**
+- 
 
 <details>
 <summary>Click here to see older Changelogs</summary>
+
+### 🆕 v2.1.0
+- 🚨 **Auto-Retry Downloads and Auto-Patch Files** — 
+- ⚡ **Hardware Acceleration** — 
+- 🔎 **Browse CurseForge Mods** — Browsing mods now easier with our dedicated CurseForge API Key.
+- 🌎 **Fixes and Release New Translation** — Fixed 🇪🇸 🇧🇷 and added more translation for current build. Turkish 🇹🇷 language now added.
 
 ### 🆕 v2.0.2b *(Minor Update: Performance & Utilities)*  
 - 🌎 **Language Translation** — A big welcome for Spanish 🇪🇸 and Portuguese (Brazil) 🇧🇷 players! **Language setting can be found in the bottom part of Settings pane.**

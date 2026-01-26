@@ -9,80 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-arch:
-    runs-on: ubuntu-latest
-
-    container:
-      image: archlinux:latest
-
-    steps:
-      - name: Install base packages
-        run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm \
-            base-devel \
-            git \
-            nodejs \
-            npm \
-            rpm-tools \
-            libxcrypt-compat
-
-      - name: Create build user
-        run: |
-          useradd -m builder
-          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Fix permissions
-        run: chown -R builder:builder .
-
-      - name: Build Arch Package
-        run: |
-          sudo -u builder bash << 'EOF'
-          set -e
-          makepkg -s --noconfirm
-          EOF
-      - uses: actions/upload-artifact@v4
-        with:
-          name: arch-package
-          path: |
-            *.pkg.tar.zst
-            *.src.tar.zst
-            .SRCINFO
-
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libarchive-tools
-          
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-
-      - name: Build Linux Packages
-        run: |
-          npx electron-builder --linux --x64 --arm64 --publish never
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-builds
-          path: |
-            dist/*.AppImage
-            dist/*.AppImage.blockmap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.pacman
-            dist/latest-linux.yml
-
   build-windows:
     runs-on: windows-latest
     steps:
@@ -123,8 +49,82 @@ jobs:
             dist/*.zip
             dist/latest-mac.yml
 
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+
+      - name: Build Linux Packages
+        run: |
+          npx electron-builder --linux AppImage deb rpm --x64 --arm64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-builds
+          path: |
+            dist/*.AppImage
+            dist/*.AppImage.blockmap
+            dist/*.deb
+            dist/*.rpm
+            dist/latest-linux.yml
+
+  build-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Install base packages
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm \
+            base-devel \
+            git \
+            nodejs \
+            npm \
+            rpm-tools \
+            libxcrypt-compat
+
+      - name: Create build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Fix Permissions
+        run: chown -R builder:builder .
+
+      - name: Build Arch Package
+        run: |
+          sudo -u builder bash << 'EOF'
+          set -e
+          makepkg --printsrcinfo > .SRCINFO
+          makepkg -s --noconfirm
+          EOF
+
+      - name: Upload Arch Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-package
+          path: |
+            *.pkg.tar.zst
+            *.src.tar.zst
+            .SRCINFO
+
   release:
-    needs: [build-linux, build-windows, build-macos]
+    needs: [build-windows, build-macos, build-linux, build-arch]
     runs-on: ubuntu-latest
     if: |
       startsWith(github.ref, 'refs/tags/v') || 
@@ -154,13 +154,15 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           # If it's a tag, use the tag. 
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}.r{1}', steps.pkg_version.outputs.VERSION, github.run_number) }}
+          # tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}.r{1}', steps.pkg_version.outputs.VERSION, github.run_number) }}
           # If it's the 'release' branch, use 'v2.0.2-beta.r42'
           # name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}-beta.r{1}', steps.pkg_version.outputs.VERSION, github.run_number) }}
           files: |
             artifacts/arch-package/*.pkg.tar.zst
             artifacts/arch-package/*.src.tar.zst
+            artifacts/arch-package/.SRCINFO
             artifacts/linux-builds/**/*
             artifacts/windows-builds/**/*
             artifacts/macos-builds/**/*

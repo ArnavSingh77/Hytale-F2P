@@ -11,7 +11,11 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
     "build:mac": "electron-builder --mac",
-    "build:all": "electron-builder --win --linux --mac"
+    "build:all": "electron-builder --win --linux --mac",
+    "build:arch": "electron-builder --linux dir",
+    "build:appimage": "electron-builder --linux AppImage --publish never",
+    "build:deb": "electron-builder --linux deb --publish never",
+    "build:rpm": "electron-builder --linux rpm --publish never"
   },
   "keywords": [
     "hytale",
@@ -82,7 +86,7 @@
           ]
         }
       ],
-      "icon": "icon.ico"
+      "icon": "build/icon.ico"
     },
     "linux": {
       "target": [
@@ -102,13 +106,6 @@
         },
         {
           "target": "rpm",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "pacman",
           "arch": [
             "x64",
             "arm64"

@@ -32,6 +32,7 @@ class ClientUpdateManager {
         console.log('✅ ClientUpdateManager initialized');
 
         // Note: Don't call checkForUpdatesOnDemand() here - main.js already checks
+
         // for updates after 3 seconds and sends 'update-available' event.
         // Calling it here would cause duplicate popups.
     }
@@ -50,7 +51,11 @@ class ClientUpdateManager {
         const popupHTML = `
             <div id="update-popup-overlay">
                 <div class="update-popup-container update-popup-pulse">
+                    <button id="update-close-btn" class="update-close-btn" title="Dismiss update notification">
+                        <i class="fas fa-times"></i>
+                    </button>
                     <div class="update-popup-header">
+
                         <div class="update-popup-icon">
                             <i class="fas fa-download"></i>
                         </div>
@@ -229,7 +234,17 @@ class ClientUpdateManager {
             });
         }
 
+        const closeBtn = document.getElementById('update-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.closeUpdatePopup();
+            });
+        }
+
         console.log('🔔 Update popup displayed with new style');
+
     }
 
     closeUpdatePopup() {
@@ -271,7 +286,16 @@ class ClientUpdateManager {
     }
 
     showUpdateDownloaded(updateInfo) {
+        console.log('🔔 showUpdateDownloaded called, updatePopupVisible:', this.updatePopupVisible);
+
+        // If popup was dismissed/closed, show it again since update is now ready
+        if (!this.updatePopupVisible || !document.getElementById('update-popup-overlay')) {
+            console.log('🔄 Re-showing update popup for downloaded state');
+            this.showUpdatePopup(updateInfo);
+        }
+
         const statusText = document.getElementById('update-status-text');
+
         const progressContainer = document.getElementById('update-progress-container');
         const buttonsContainer = document.getElementById('update-buttons-container');
         const installBtn = document.getElementById('update-install-btn');

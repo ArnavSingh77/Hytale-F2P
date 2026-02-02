@@ -4933,6 +4933,7 @@ select.settings-input option {
 
 
 .update-popup-container {
+    position: relative !important;
     background: linear-gradient(145deg, #1f2937 0%, #111827 50%, #0f172a 100%) !important;
     padding: 2rem !important;
     border-radius: 1rem !important;
@@ -4946,6 +4947,36 @@ select.settings-input option {
     animation: updatePopupSlide 0.5s ease-out !important;
     pointer-events: all !important;
 }
+
+.update-close-btn {
+    position: absolute !important;
+    top: 1.25rem !important;
+    right: 1.25rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #9ca3af !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 100 !important;
+}
+
+.update-close-btn:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+    transform: rotate(90deg) scale(1.1) !important;
+}
+
+.update-close-btn i {
+    font-size: 1rem !important;
+}
+
 
 
 @keyframes updatePopupSlide {
